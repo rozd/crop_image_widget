@@ -1,11 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
 import '../../crop_image_widget.dart';
-import '../data/constraints_settings.dart';
-import '../data/crop_settings.dart';
 import 'backstage_calculator.dart';
 import 'backstage_calculator_crop_area_constrained.dart';
 import 'backstage_calculator_viewport_constrained.dart';
@@ -36,9 +35,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
   ImageInfo get imageInfo => _imageInfo!;
   set imageInfo(ImageInfo value) {
     _imageInfo = value;
-    needsInitialization = true;
-    initializeIfNeeded();
-    notifyListeners();
+    initializeIfNeeded(isImageInfoChanged: true);
   }
 
   Rect? _viewport;
@@ -48,10 +45,10 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
       return;
     }
     _viewport = value;
-    initializeIfNeeded();
+    initializeIfNeeded(isViewportChanged: true);
   }
 
-  bool get isReady => _imageInfo != null && _viewport != null;
+  // MARK: State
 
   late Rect _imageRect = Rect.fromLTWH(0, 0, viewport.width, viewport.height);
   Rect get imageRect => _imageRect;
@@ -60,8 +57,8 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     notifyListeners();
   }
 
-  Rect? _cropRect;
-  Rect get cropRect => _cropRect!;
+  late Rect _cropRect = cropArea.getArea(viewport.size);
+  Rect get cropRect => _cropRect;
   void _setCropRect(Rect value) {
     _cropRect = value;
     notifyListeners();
@@ -74,18 +71,34 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     notifyListeners();
   }
 
-  var needsInitialization = true;
-  void initializeIfNeeded() {
-    if (!needsInitialization && _imageInfo != null && _cropRect != null) {
-      return;
-    }
+  // MARK: Initialization
+
+  bool get isReady => _imageInfo != null && _viewport != null;
+
+  var isInitializationNeeded = true;
+  void initializeIfNeeded({
+    bool isImageInfoChanged = false,
+    bool isViewportChanged = false,
+  }) {
+    isInitializationNeeded |= isImageInfoChanged;
     if (_viewport == null) {
       return;
     }
-    _imageRect = Rect.fromLTWH(0, 0, viewport.width, viewport.height);
     _cropRect = cropArea.getArea(viewport.size);
-    resetScale();
-    needsInitialization = false;
+    _imageRect = Rect.fromLTWH(0, 0, viewport.width, viewport.height);
+    if (_imageInfo == null) {
+      return;
+    }
+    if (!isInitializationNeeded) {
+      if (isViewportChanged) {
+        scheduleMicrotask(() {
+          reset(scale: 1.0);
+        });
+      }
+      return;
+    }
+    reset(scale: 1.0);
+    isInitializationNeeded = false;
   }
 
   // MARK: - <CropControllerDelegate>
@@ -102,8 +115,8 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     final ratio = max(ratioX, ratioY);
 
     return Rect.fromLTWH(
-      (cropRect.left - _imageRect.left) * ratio / _scale,
-      (cropRect.top - _imageRect.top) * ratio / _scale,
+      (cropRect.left - imageRect.left) * ratio / _scale,
+      (cropRect.top - imageRect.top) * ratio / _scale,
       cropRect.width * ratio / _scale,
       cropRect.height * ratio / _scale,
     );
@@ -117,7 +130,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
   // MARK: - Calculations
 
   Rect get cropRectBounds {
-    return calculator.bounds;
+    return calculator.cropRectBounds;
   }
 
   // MARK: Move Image
@@ -132,7 +145,12 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     if (!isReady) {
       return;
     }
-    _setImageRect(calculator.moveImageRect(details));
+    _setImageRect(
+      calculator.moveImageRect(
+        details.focalPointDelta.dx,
+        details.focalPointDelta.dy,
+      ),
+    );
     _isMoving = true;
   }
 
@@ -187,6 +205,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
       imageRect: imageRect,
       focalPoint: focalPoint,
     );
+
     if (result == null) {
       return;
     }
@@ -196,8 +215,11 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     _setScale(result.scale);
   }
 
-  void resetScale() {
-    if (!settings.zoom.shouldUpdateScale(1.0)) {
+  void reset({
+    required double scale,
+    Offset? focalPoint,
+  }) {
+    if (!settings.zoom.shouldUpdateScale(scale)) {
       return;
     }
 
@@ -205,11 +227,13 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
       return;
     }
 
-    final result = calculator.scaleImageRect(1.0,
+    final result = calculator.scaleImageRect(scale,
       cropRect: cropRect,
       imageRect: imageRect,
+      focalPoint: focalPoint,
       isReset: true,
     );
+
     if (result == null) {
       return;
     }
@@ -236,20 +260,24 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     if (newLeft < bounds.left) {
       newLeft = bounds.left;
       newRight = newLeft + cropRect.width;
+      _setImageRect(calculator.moveImageRect(deltaX, 0));
     }
     if (newTop < bounds.top) {
       newTop = bounds.top;
       newBottom = newTop + cropRect.height;
+      _setImageRect(calculator.moveImageRect(0, deltaY));
     }
 
     // Ensure the new position does not exceed the right or bottom bounds
     if (newRight > bounds.right) {
       newRight = bounds.right;
       newLeft = newRight - cropRect.width;
+      _setImageRect(calculator.moveImageRect(deltaX, 0));
     }
     if (newBottom > bounds.bottom) {
       newBottom = bounds.bottom;
       newTop = newBottom - cropRect.height;
+      _setImageRect(calculator.moveImageRect(0, deltaY));
     }
 
     // Update the crop rectangle's position
@@ -261,7 +289,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     bool keepAspectRatio = false,
   }) {
 
-    final bounds = this.cropRectBounds;
+    final bounds = cropRectBounds;
     final newLeft = max(
       bounds.left,
       min(cropRect.left + deltaX, cropRect.right - 40),
@@ -318,7 +346,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required Rect cropRect,
     bool keepAspectRatio = false,
   }) {
-    final bounds = this.cropRectBounds;
+    final bounds = cropRectBounds;
     final newTop = min(
       max(cropRect.top + deltaY, bounds.top),
       cropRect.bottom - 40,
@@ -375,7 +403,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required Rect cropRect,
     bool keepAspectRatio = false,
   }) {
-    final bounds = this.cropRectBounds;
+    final bounds = cropRectBounds;
     final newLeft = max(
       bounds.left,
       min(cropRect.left + deltaX, cropRect.right - 40),
@@ -432,7 +460,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required Rect cropRect,
     bool keepAspectRatio = false,
   }) {
-    final bounds = this.cropRectBounds;
+    final bounds = cropRectBounds;
     final newRight = min(
       bounds.right,
       max(cropRect.right + deltaX, cropRect.left + 40),

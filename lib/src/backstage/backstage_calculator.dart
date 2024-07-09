@@ -7,11 +7,11 @@ abstract class BackstageCalculator {
 
   final Backstage backstage;
 
-  Rect get bounds;
+  Rect get cropRectBounds;
 
   Rect get imageRectBounds;
 
-  Rect moveImageRect(ScaleUpdateDetails details);
+  Rect moveImageRect(double deltaX, double deltaY);
 
   ({Rect imageRect, double scale})? scaleImageRect(double nextScale, {
     required Rect cropRect,

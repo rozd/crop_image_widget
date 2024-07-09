@@ -14,23 +14,20 @@ class BackstageCalculatorViewportConstrained extends BackstageCalculator {
   final ViewportConstrainedSettings settings;
 
   @override
-  Rect get bounds => backstage.viewport;
+  Rect get cropRectBounds => backstage.viewport;
 
   @override
   Rect get imageRectBounds => backstage.viewport;
 
   @override
-  Rect moveImageRect(ScaleUpdateDetails details) {
+  Rect moveImageRect(double deltaX, double deltaY) {
     final imageRect = backstage.imageRect;
     final bounds = imageRectBounds;
 
-    var dx = details.focalPointDelta.dx;
-    var dy = details.focalPointDelta.dy;
-
-    double newLeft = imageRect.left + dx;
-    double newTop = imageRect.top + dy;
-    double newRight = imageRect.right + dx;
-    double newBottom = imageRect.bottom + dy;
+    double newLeft = imageRect.left + deltaX;
+    double newTop = imageRect.top + deltaY;
+    double newRight = imageRect.right + deltaX;
+    double newBottom = imageRect.bottom + deltaY;
 
     final newImageBounds = Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
 

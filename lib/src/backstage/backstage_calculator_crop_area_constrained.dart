@@ -14,7 +14,7 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
   final CropAreaConstrainedSettings settings;
 
   @override
-  Rect get bounds {
+  Rect get cropRectBounds {
     final imageBounds = calcImageBounds(backstage.imageRect);
 
     final viewport = backstage.viewport;
@@ -72,18 +72,15 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
   }
 
   @override
-  Rect moveImageRect(ScaleUpdateDetails details) {
+  Rect moveImageRect(double deltaX, double deltaY) {
     final imageRect = backstage.imageRect;
 
     final bounds = imageRectBounds;
 
-    var dx = details.focalPointDelta.dx;
-    var dy = details.focalPointDelta.dy;
-
-    double newLeft = imageRect.left + dx;
-    double newTop = imageRect.top + dy;
-    double newRight = imageRect.right + dx;
-    double newBottom = imageRect.bottom + dy;
+    double newLeft = imageRect.left + deltaX;
+    double newTop = imageRect.top + deltaY;
+    double newRight = imageRect.right + deltaX;
+    double newBottom = imageRect.bottom + deltaY;
 
     final newImageRect = Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
     final newImageBounds = calcImageBounds(newImageRect);
@@ -119,7 +116,7 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
     final _scale = backstage.scale;
     final imageInfo = backstage.imageInfo;
     final viewport = backstage.viewport;
-    final bounds = backstage.cropRectBounds;
+    final bounds = _cropRect;
 
     late double baseHeight;
     late double baseWidth;

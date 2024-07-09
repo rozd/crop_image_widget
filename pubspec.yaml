@@ -1,6 +1,6 @@
 name: crop_image_widget
 description: "A widget to crop images."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/rozd/crop_image_widget
 
 environment:
