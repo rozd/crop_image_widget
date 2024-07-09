@@ -36,6 +36,20 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
     return Rect.fromLTRB(limitedLeft, limitedTop, limitedRight, limitedBottom);
   }
 
+  @override
+  Rect get imageRectBounds {
+    final imageRect = backstage.imageRect;
+    final cropRect = backstage.cropRect;
+    final viewport = backstage.viewport;
+    return settings.restrictImageToViewport
+      ? imageRect.size > viewport.size
+        ? viewport
+        : imageRect.size.aspectRatio < viewport.size.aspectRatio
+          ? Rect.fromLTWH(cropRect.left, viewport.top, cropRect.width, viewport.height)
+          : Rect.fromLTWH(viewport.left, cropRect.top, viewport.width, cropRect.height)
+      : backstage.cropRect;
+  }
+
   Rect calcImageBounds(Rect imageRect) {
     // TODO: check imageInfo is null
     final imageInfo = backstage.imageInfo;
@@ -60,7 +74,8 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
   @override
   Rect moveImageRect(ScaleUpdateDetails details) {
     final imageRect = backstage.imageRect;
-    final cropRect = backstage.cropRect;
+
+    final bounds = imageRectBounds;
 
     var dx = details.focalPointDelta.dx;
     var dy = details.focalPointDelta.dy;
@@ -73,19 +88,19 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
     final newImageRect = Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
     final newImageBounds = calcImageBounds(newImageRect);
 
-    if (newImageBounds.left > cropRect.left) {
-      newLeft -= newImageBounds.left - cropRect.left;
+    if (newImageBounds.left > bounds.left) {
+      newLeft -= newImageBounds.left - bounds.left;
       newRight = newLeft + imageRect.width;
-    } else if (newImageBounds.right < cropRect.right) {
-      newRight += cropRect.right - newImageBounds.right;
+    } else if (newImageBounds.right < bounds.right) {
+      newRight += bounds.right - newImageBounds.right;
       newLeft = newRight - imageRect.width;
     }
 
-    if (newImageBounds.top > cropRect.top) {
-      newTop -= newImageBounds.top - cropRect.top;
+    if (newImageBounds.top > bounds.top) {
+      newTop -= newImageBounds.top - bounds.top;
       newBottom = newTop + imageRect.height;
-    } else if (newImageBounds.bottom < cropRect.bottom) {
-      newBottom += cropRect.bottom - newImageBounds.bottom;
+    } else if (newImageBounds.bottom < bounds.bottom) {
+      newBottom += bounds.bottom - newImageBounds.bottom;
       newTop = newBottom - imageRect.height;
     }
 
@@ -104,7 +119,7 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
     final _scale = backstage.scale;
     final imageInfo = backstage.imageInfo;
     final viewport = backstage.viewport;
-    final bounds = backstage.bounds;
+    final bounds = backstage.cropRectBounds;
 
     late double baseHeight;
     late double baseWidth;
@@ -120,7 +135,10 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
     if (settings.restrictImageToViewport) {
       nextScale = max(
         nextScale,
-        min(viewport.width / baseWidth, viewport.height / baseHeight),
+        max(
+          max(_cropRect.width / baseWidth, _cropRect.height / baseHeight),
+          min(viewport.width / baseWidth, viewport.height / baseHeight),
+        ),
       );
     } else {
       nextScale = max(
@@ -134,27 +152,27 @@ class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
     }
 
     final newWidth = baseWidth * nextScale;
-    final horizontalFocalPointBias = focalPoint == null || bounds.width < viewport.width
+    final horizontalFocalPointBias = focalPoint == null
       ? 0.5
       : (focalPoint.dx - _imageRect.left) / _imageRect.width;
     final leftPositionDelta =
-        (newWidth - _imageRect.width) * horizontalFocalPointBias;
+      (newWidth - _imageRect.width) * horizontalFocalPointBias;
 
     final newHeight = baseHeight * nextScale;
-    final verticalFocalPointBias = focalPoint == null || bounds.height < viewport.height
+    final verticalFocalPointBias = focalPoint == null
       ? 0.5
       : (focalPoint.dy - _imageRect.top) / _imageRect.height;
     final topPositionDelta =
-        (newHeight - _imageRect.height) * verticalFocalPointBias;
+      (newHeight - _imageRect.height) * verticalFocalPointBias;
 
     final newLeft = max(
-      min(_cropRect.left, _imageRect.left - leftPositionDelta),
-      _cropRect.right - newWidth
+      min(bounds.left, _imageRect.left - leftPositionDelta),
+      bounds.right - newWidth
     );
 
     final newTop = max(
-        min(_cropRect.top, _imageRect.top - topPositionDelta),
-        _cropRect.bottom - newHeight
+      min(bounds.top, _imageRect.top - topPositionDelta),
+      bounds.bottom - newHeight
     );
 
     return (

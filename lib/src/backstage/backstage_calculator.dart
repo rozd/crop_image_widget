@@ -9,6 +9,8 @@ abstract class BackstageCalculator {
 
   Rect get bounds;
 
+  Rect get imageRectBounds;
+
   Rect moveImageRect(ScaleUpdateDetails details);
 
   ({Rect imageRect, double scale})? scaleImageRect(double nextScale, {

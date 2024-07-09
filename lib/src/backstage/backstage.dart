@@ -116,7 +116,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
 
   // MARK: - Calculations
 
-  Rect get bounds {
+  Rect get cropRectBounds {
     return calculator.bounds;
   }
 
@@ -182,7 +182,11 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
       return;
     }
 
-    final result = calculator.scaleImageRect(nextScale, cropRect: cropRect, imageRect: imageRect);
+    final result = calculator.scaleImageRect(nextScale,
+      cropRect: cropRect,
+      imageRect: imageRect,
+      focalPoint: focalPoint,
+    );
     if (result == null) {
       return;
     }
@@ -220,6 +224,8 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
   void moveCropArea(double deltaX, double deltaY, {
     required Rect cropRect,
   }) {
+    final bounds = cropRectBounds;
+
     // Calculate the new position
     double newLeft = cropRect.left + deltaX;
     double newTop = cropRect.top + deltaY;
@@ -255,7 +261,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     bool keepAspectRatio = false,
   }) {
 
-    final bounds = this.bounds;
+    final bounds = this.cropRectBounds;
     final newLeft = max(
       bounds.left,
       min(cropRect.left + deltaX, cropRect.right - 40),
@@ -312,7 +318,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required Rect cropRect,
     bool keepAspectRatio = false,
   }) {
-    final bounds = this.bounds;
+    final bounds = this.cropRectBounds;
     final newTop = min(
       max(cropRect.top + deltaY, bounds.top),
       cropRect.bottom - 40,
@@ -369,7 +375,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required Rect cropRect,
     bool keepAspectRatio = false,
   }) {
-    final bounds = this.bounds;
+    final bounds = this.cropRectBounds;
     final newLeft = max(
       bounds.left,
       min(cropRect.left + deltaX, cropRect.right - 40),
@@ -426,7 +432,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required Rect cropRect,
     bool keepAspectRatio = false,
   }) {
-    final bounds = this.bounds;
+    final bounds = this.cropRectBounds;
     final newRight = min(
       bounds.right,
       max(cropRect.right + deltaX, cropRect.left + 40),

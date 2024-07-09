@@ -9,10 +9,9 @@ final class CropSettings {
 
   const CropSettings.defaults() : this(
     zoom: const ZoomSettings.defaults(),
-    constraints: const ConstraintsSettings.viewportConstrained(),
-    // constraints: const ConstraintsSettings.cropAreaConstrained(
-    //   restrictImageToViewport: false,
-    // ),
+    constraints: const ConstraintsSettings.cropAreaConstrained(
+      restrictImageToViewport: true,
+    ),
   );
 
   final ZoomSettings zoom;

@@ -9,7 +9,9 @@ class DefaultCroppingAlgorithm implements CroppingAlgorithm {
   const DefaultCroppingAlgorithm();
 
   @override
-  Future<Uint8List> cropRect(Image image, Rect cropRect, {required ImageByteFormat format}) {
+  Future<Uint8List> cropRect(Image image, Rect cropRect, {
+    required ImageByteFormat format,
+  }) async {
     final recorder = PictureRecorder();
     Canvas(recorder).drawImageRect(
       image,
@@ -18,7 +20,7 @@ class DefaultCroppingAlgorithm implements CroppingAlgorithm {
       Paint(),
     );
 
-    final croppedImage = recorder.endRecording().toImageSync(
+    final croppedImage = await recorder.endRecording().toImage(
       cropRect.width.toInt(),
       cropRect.height.toInt(),
     );

@@ -17,9 +17,12 @@ class BackstageCalculatorViewportConstrained extends BackstageCalculator {
   Rect get bounds => backstage.viewport;
 
   @override
+  Rect get imageRectBounds => backstage.viewport;
+
+  @override
   Rect moveImageRect(ScaleUpdateDetails details) {
     final imageRect = backstage.imageRect;
-    final viewport = backstage.viewport;
+    final bounds = imageRectBounds;
 
     var dx = details.focalPointDelta.dx;
     var dy = details.focalPointDelta.dy;
@@ -31,19 +34,19 @@ class BackstageCalculatorViewportConstrained extends BackstageCalculator {
 
     final newImageBounds = Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
 
-    if (newImageBounds.left > viewport.left) {
-      newLeft -= newImageBounds.left - viewport.left;
+    if (newImageBounds.left > bounds.left) {
+      newLeft -= newImageBounds.left - bounds.left;
       newRight = newLeft + imageRect.width;
-    } else if (newImageBounds.right < viewport.right) {
-      newRight += viewport.right - newImageBounds.right;
+    } else if (newImageBounds.right < bounds.right) {
+      newRight += bounds.right - newImageBounds.right;
       newLeft = newRight - imageRect.width;
     }
 
-    if (newImageBounds.top > viewport.top) {
-      newTop -= newImageBounds.top - viewport.top;
+    if (newImageBounds.top > bounds.top) {
+      newTop -= newImageBounds.top - bounds.top;
       newBottom = newTop + imageRect.height;
-    } else if (newImageBounds.bottom < viewport.bottom) {
-      newBottom += viewport.bottom - newImageBounds.bottom;
+    } else if (newImageBounds.bottom < bounds.bottom) {
+      newBottom += bounds.bottom - newImageBounds.bottom;
       newTop = newBottom - imageRect.height;
     }
 
@@ -61,7 +64,7 @@ class BackstageCalculatorViewportConstrained extends BackstageCalculator {
     final _scale = backstage.scale;
     final imageInfo = backstage.imageInfo;
     final viewport = backstage.viewport;
-    final bounds = backstage.bounds;
+    final bounds = backstage.cropRectBounds;
 
     late double baseHeight;
     late double baseWidth;
