@@ -26,6 +26,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
   CropArea get cropArea => _cropArea;
   set cropArea(CropArea value) {
     _cropArea = value;
+    initializeIfNeeded(isViewportChanged: true);
   }
 
   CropSettings _settings;
@@ -311,6 +312,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
           cropRect.bottom,
         )
       );
+      return;
     }
     final aspectRatio = cropRect.size.aspectRatio;
     if (deltaX.abs() > deltaY.abs()) {
@@ -368,6 +370,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
           cropRect.bottom,
         )
       );
+      return;
     }
     final aspectRatio = cropRect.size.aspectRatio;
     if (deltaX.abs() > deltaY.abs()) {
@@ -425,6 +428,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
           newBottom,
         )
       );
+      return;
     }
     final aspectRatio = cropRect.size.aspectRatio;
     if (deltaX.abs() > deltaY.abs()) {
@@ -482,6 +486,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
           newBottom,
         )
       );
+      return;
     }
     final aspectRatio = cropRect.size.aspectRatio;
     if (deltaX.abs() > deltaY.abs()) {

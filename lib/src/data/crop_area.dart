@@ -51,10 +51,12 @@ abstract class CropArea {
   /// [isEditable]: A boolean flag indicating whether the crop area is editable.
   /// [origin]: The origin point of the crop area (optional).
   factory CropArea.circle(Size size, {
+    required bool keepAspectRatio,
     required bool isEditable,
     Offset? origin,
   }) => CircleCropArea(
     isEditable: isEditable,
+    keepAspectRatio: keepAspectRatio,
     origin: origin,
     size: size,
   );
@@ -154,8 +156,9 @@ class CircleCropArea extends FreeCropArea {
   /// [size]: The size of the crop area.
   /// [origin]: The origin point of the crop area (optional).
   CircleCropArea({
-    required super.isEditable,
     required super.size,
+    required super.isEditable,
+    required super.keepAspectRatio,
     super.origin,
     super.isCircle = true,
   });
