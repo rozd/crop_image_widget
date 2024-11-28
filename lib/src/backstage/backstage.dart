@@ -9,6 +9,9 @@ import 'backstage_calculator.dart';
 import 'backstage_calculator_crop_area_constrained.dart';
 import 'backstage_calculator_viewport_constrained.dart';
 
+/// The `Backstage` class is backend for user interaction, it manages the
+/// cropping area and image scaling, handling user input for image movement,
+/// scaling, and cropping interactions.
 class Backstage extends ChangeNotifier implements CropControllerDelegate {
 
   Backstage({
@@ -16,6 +19,7 @@ class Backstage extends ChangeNotifier implements CropControllerDelegate {
     required CropSettings settings,
   }) : _cropArea = cropArea, _settings = settings;
 
+  /// Calculator instance to handle the calculation for constraints
   late var calculator = settings.constraints.createCalculator(this);
 
   CropArea _cropArea;

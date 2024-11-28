@@ -10,6 +10,13 @@ import 'painting/listenable_image_provider.dart';
 import 'rendering/crop_clipper.dart';
 import 'theme/crop_image_theme.dart';
 
+/// A widget that allows users to crop an image in an interactive way.
+///
+/// The `CropImage` widget provides interactive features such as zooming,
+/// panning, and resizing the crop area.
+///
+/// The crop area can be customized as either rectangular or circular. It uses a
+/// `CropController` to manage the crop area and a `CropSettings` for configuration.
 class CropImage extends StatefulWidget {
   const CropImage({
     required this.image,
@@ -19,10 +26,20 @@ class CropImage extends StatefulWidget {
     super.key,
   });
 
+  /// The image to be displayed and cropped.
+  ///
+  /// This should be a valid [ImageProvider] (e.g., [AssetImage], [NetworkImage]).
   final ImageProvider image;
 
+  /// The initial crop area to be applied to the image.
+  ///
+  /// Defines the shape, size, and position of the crop area, which can be a
+  /// rectangle or a circle.
   final CropArea cropArea;
 
+  /// The controller that manages the crop area and interaction.
+  ///
+  /// This controller is used to apply transformations to the crop area and interact with the crop settings.
   final CropController controller;
 
   final CropSettings settings;
@@ -31,6 +48,7 @@ class CropImage extends StatefulWidget {
   State<CropImage> createState() => _CropImageState();
 }
 
+///
 class _CropImageState extends State<CropImage> {
   StreamSubscription? _imagesSubscription;
 

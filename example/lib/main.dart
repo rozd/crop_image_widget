@@ -65,15 +65,16 @@ class _MyHomePageState extends State<MyHomePage> {
               left: 8,
               bottom: 8,
               child: ElevatedButton(
-                onPressed: () async {
-                  final bytes = await _controller.crop(format: ImageByteFormat.rawUnmodified);
-                  if (bytes == null) {
-                    return;
-                  }
-                  if (!context.mounted) {
-                    return;
-                  }
-                  _showCroppedImageDialog(bytes);
+                onPressed: () {
+                  _controller.crop(format: ImageByteFormat.rawUnmodified).then((bytes) {
+                    if (bytes == null) {
+                      return;
+                    }
+                    if (!context.mounted) {
+                      return;
+                    }
+                    _showCroppedImageDialog(bytes);
+                  });
                 },
                 child: const Text('Crop'),
               ),

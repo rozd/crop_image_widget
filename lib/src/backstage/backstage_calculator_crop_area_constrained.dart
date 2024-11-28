@@ -6,7 +6,14 @@ import '../data/constraints_settings.dart';
 import '../utils/painting+extensions.dart';
 import 'backstage_calculator.dart';
 
+/// A concrete implementation of [BackstageCalculator] that calculates image and
+/// crop rectangle bounds while ensuring the image is constrained within the
+/// crop area. This class adjusts the image and crop area according to specific
+/// constraints defined in the [settings] object.
 class BackstageCalculatorCropAreaConstrained extends BackstageCalculator {
+
+  /// Constructs an instance of [BackstageCalculatorCropAreaConstrained] with the provided
+  /// [backstage] context and [settings] that define the constraints for the crop area.
   const BackstageCalculatorCropAreaConstrained(super.backstage, {
     required this.settings,
   });

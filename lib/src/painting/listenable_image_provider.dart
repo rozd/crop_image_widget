@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
+/// A utility class that wraps an [ImageProvider] and provides a stream of
+/// [ImageInfo] objects.
 class ListenableImageProvider<T extends Object> implements ImageProvider<T> {
 
   ListenableImageProvider(this.provider);

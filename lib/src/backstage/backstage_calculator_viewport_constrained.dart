@@ -6,19 +6,28 @@ import '../data/constraints_settings.dart';
 import '../utils/painting+extensions.dart';
 import 'backstage_calculator.dart';
 
+/// A concrete implementation of [BackstageCalculator] that calculates image and
+/// crop rectangle bounds with respect to a constrained viewport. It provides
+/// methods for moving and scaling the image within the given viewport bounds.
 class BackstageCalculatorViewportConstrained extends BackstageCalculator {
   const BackstageCalculatorViewportConstrained(super.backstage, {
     required this.settings,
   });
 
+  // Settings that control how the viewport constrains the image and crop area.
   final ViewportConstrainedSettings settings;
 
+  /// Returns the bounds of the crop rectangle, constrained to the viewport's bounds.
   @override
   Rect get cropRectBounds => backstage.viewport;
 
+  /// Returns the bounds of the image rectangle, constrained to the viewport's bounds.
   @override
   Rect get imageRectBounds => backstage.viewport;
 
+  /// Moves the image rectangle by the specified delta values for horizontal
+  /// and vertical movement, ensuring the image stays within the boundaries of
+  /// the viewport.
   @override
   Rect moveImageRect(double deltaX, double deltaY) {
     final imageRect = backstage.imageRect;
@@ -50,6 +59,10 @@ class BackstageCalculatorViewportConstrained extends BackstageCalculator {
     return Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
   }
 
+  /// Scales the image to a new scale factor, adjusting the image rectangle
+  /// accordingly. If a focal point is provided, scaling will be applied
+  /// relative to that point. Returns the new image rectangle and scale after
+  /// applying the transformation.
   @override
   ({Rect imageRect, double scale})? scaleImageRect(double nextScale, {
     required Rect cropRect,
