@@ -40,6 +40,7 @@ CropImage(
   ),
 ),
 ```
+<img width="320" alt="Aspect Ratio Crop" src="docs/screenshots/example-aspect-ratio.png">
 
 #### Free-Form Crop Area
 ```dart
@@ -51,6 +52,7 @@ CropImage(
   ),
 ),
 ```
+<img width="320" alt="Aspect Ratio Crop" src="docs/screenshots/example-free-form.png">
 
 #### Circle Crop Area
 ```dart
@@ -62,6 +64,10 @@ CropImage(
   ),
 ),
 ```
+<img width="320" alt="Aspect Ratio Crop" src="docs/screenshots/example-circle.png">
+
+## Limitations
+The html web renderer is not supported.
 
 ## Credits
 Image used in the demo is by David Foodphototasty on Unsplash.
