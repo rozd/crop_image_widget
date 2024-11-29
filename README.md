@@ -21,7 +21,7 @@ A Flutter widget for cropping sections of an image provided by an `ImageProvider
 
 ## Demo
 
-[Include screenshots, videos, or links showcasing the widget in action.]
+<img width="480" alt="Crop Image Widget Demo" src="docs/screenshots/demo.gif">
 
 ---
 
