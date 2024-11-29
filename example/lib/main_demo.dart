@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             Builder(
               builder: (context) {
                 return PopupMenuButton<ImageByteFormat>(
+                  tooltip: 'Crop with format from popup menu',
                   icon: const Icon(Icons.crop),
                   onSelected: (ImageByteFormat format) {
                     final tabController = DefaultTabController.of(context);
@@ -78,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       if (!context.mounted) {
                         return;
                       }
-                      _showCroppedImageDialog(bytes);
+                      _showCroppedImageDialog(bytes, format);
                     }).onError((error, stackTrace) {
                       print(error.toString());
                     });
@@ -119,14 +120,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     CropImage(
                       image: _image,
                       controller: _freeFormController,
-                      cropArea: CropArea.free(const Size.square(128),
+                      cropArea: CropArea.free(const Size.square(256),
                         isEditable: true,
                       ),
                     ),
                     CropImage(
                       image: _image,
                       controller: _circledController,
-                      cropArea: CropArea.circle(const Size.square(128),
+                      cropArea: CropArea.circle(const Size.square(256),
                         keepAspectRatio: true,
                         isEditable: true,
                       ),
@@ -155,7 +156,27 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
   }
 
-  Future _showCroppedImageDialog(Uint8List bytes) async {
+  Future _showCroppedImageDialog(Uint8List bytes, format) async {
+    if (format != ImageByteFormat.png) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Complete'),
+            content: Text('Bytes length of cropped image : ${bytes.length}'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK')
+              )
+            ],
+          );
+        }
+      );
+      return;
+    }
     await showDialog(
       context: context,
       builder: (context) {

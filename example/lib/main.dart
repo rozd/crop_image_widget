@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:crop_image_widget/crop_image_widget.dart';
+import 'package:example/save_png.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -46,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // MARK: - Settings
 
-  var _margin = 10.0;
+  var _initialCropAreaMargin = 10.0;
 
   var _cropAreaType = DemoCropAreaType.freeForm;
 
@@ -68,13 +69,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
         title: Text(widget.title),
         actions: [
           PopupMenuButton<ImageByteFormat>(
+            tooltip: 'Crop with format from popup menu',
             icon: const Icon(Icons.crop),
-            onSelected: (ImageByteFormat format) {
+            onSelected: (ImageByteFormat format) async {
               _controller.crop(format: format).then((bytes) {
                 if (bytes == null) {
                   return;
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (!context.mounted) {
                   return;
                 }
-                _showCroppedImageDialog(bytes);
+                _showCroppedImageDialog(bytes, format);
               });
             },
             itemBuilder: (context) => ImageByteFormat.values.map((format) => PopupMenuItem(
@@ -195,18 +195,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                const Text('Crop Area Margin:'),
+                const Text('Initial Crop Area Margin:'),
                 SizedBox(
                   width: 300,
                   child: Slider(
-                    value: _margin,
+                    value: _initialCropAreaMargin,
                     max: 100,
                     min: 0,
-                    label: _margin.round().toString(),
+                    label: _initialCropAreaMargin.round().toString(),
                     onChanged: _cropAreaType.isAspectRatio
                       ? (double value) {
                           setState(() {
-                            _margin = value;
+                            _initialCropAreaMargin = value;
                           });
                         }
                       : null,
@@ -311,16 +311,48 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future _showCroppedImageDialog(Uint8List bytes) async {
+  Future _showCroppedImageDialog(
+    Uint8List bytes,
+    ImageByteFormat format,
+  ) async {
+    if (format != ImageByteFormat.png) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Complete'),
+            content: Text('Bytes length of cropped image : ${bytes.length}'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK')
+              )
+            ],
+          );
+        }
+      );
+      return;
+    }
     await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           content: Image.memory(bytes),
+          actions: [
+            TextButton(
+              onPressed: () {
+                savePNG(bytes);
+              },
+              child: const Text('Download')
+            )
+          ],
         );
       }
     );
   }
+
 }
 
 class CustomScrollBehavior extends MaterialScrollBehavior {
@@ -379,7 +411,7 @@ extension ImageByteFormatForDisplay on ImageByteFormat {
       case ImageByteFormat.png:
         return 'PNG';
       default:
-        return 'Unknown';
+        return name;
     }
   }
 
@@ -394,15 +426,15 @@ extension on _MyHomePageState {
     if (aspectRatio != null) {
       return CropArea.aspectRatio(aspectRatio,
         isEditable: _isCropAreaEditable,
-        margin: _margin,
+        margin: _initialCropAreaMargin,
       );
     } else if (_cropAreaType == DemoCropAreaType.circle) {
-      return CropArea.circle(const Size.square(96),
+      return CropArea.circle(const Size.square(256),
         isEditable: _isCropAreaEditable,
         keepAspectRatio: _keepAspectRatio,
       );
     } else {
-      return CropArea.free(const Size.square(96),
+      return CropArea.free(const Size.square(256),
         isEditable: _isCropAreaEditable,
       );
     }
