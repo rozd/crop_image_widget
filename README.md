@@ -1,39 +1,67 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Crop Image Widget
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+A Flutter widget for cropping sections of an image provided by an `ImageProvider`.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+---
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Key Features
 
-## Features
+- **Zero Dependencies**: Cropping is implemented using Flutter's standard painting API, ensuring compatibility across all Flutter platforms.
+- **Aesthetic Blur Background**: Provides a visually pleasing blurred background effect (subjective preference).
+- **Minimalistic Interface**: Designed for simplicity and ease of use (subjective preference).
+- **Highly Customizable**: Focused on balancing flexibility and simplicity without overwhelming the API.
+- **Rich Feature Set**: Offers most of the essential functionalities expected from an image cropper:
+    - Resize the crop area by dragging the edges of the grid overlay.
+    - Restrict the crop area to a specific aspect ratio.
+    - Move and scale the image using gestures.
+    - Support for circular crop areas.
+    - **Note**: Currently, image rotation is not supported.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+---
 
-## Getting started
+## Demo
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+[Include screenshots, videos, or links showcasing the widget in action.]
 
-## Usage
+---
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+## Usage Examples
 
+### Examples of Crop Area Settings
+
+#### Aspect Ratio Crop Area
 ```dart
-const like = 'sample';
+CropImage(
+  image: _image,
+  controller: _aspectRatioController,
+  cropArea: CropArea.aspectRatio(16 / 9,
+    isEditable: true,
+    margin: 0,
+  ),
+),
 ```
 
-## Additional information
+#### Free-Form Crop Area
+```dart
+CropImage(
+  image: _image,
+  controller: _freeFormController,
+  cropArea: CropArea.free(const Size.square(256),
+    isEditable: true,
+  ),
+),
+```
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+#### Circle Crop Area
+```dart
+CropImage(
+  image: _image,
+  controller: _circleController,
+  cropArea: CropArea.circle(const Size.square(256),
+    isEditable: true,
+  ),
+),
+```
+
+## Credits
+Image used in the demo is by David Foodphototasty on Unsplash.

@@ -15,13 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       scrollBehavior: CustomScrollBehavior(),
       title: 'Crop Image Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Crop Image Widget Demo'),
+      home: const MyHomePage(title: 'Crop Image Widget'),
     );
   }
 }
@@ -365,7 +366,7 @@ enum DemoConstraintsType {
   cropArea,
 }
 
-extension on ImageByteFormat {
+extension ImageByteFormatForDisplay on ImageByteFormat {
 
   String get nameForDisplay {
     switch (this) {

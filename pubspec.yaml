@@ -1,6 +1,6 @@
 name: crop_image_widget
-description: "A widget to crop images."
-version: 0.0.4
+description: "A Flutter widget for cropping sections of an image provided by an ImageProvider."
+version: 0.0.5
 homepage: https://github.com/rozd/crop_image_widget
 
 environment:
