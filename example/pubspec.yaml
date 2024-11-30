@@ -1,5 +1,5 @@
 name: example
-description: "A new Flutter project."
+description: "A demo project for the crop_image_widget package."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
@@ -11,18 +11,17 @@ dependencies:
     sdk: flutter
   crop_image_widget:
     path: ../
-  cupertino_icons: ^1.0.6
+  cupertino_icons: any
   image_picker: any
   web: any
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: any
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/sail-boat.png
     - assets/bowl.jpg
     - assets/potato.jpg
