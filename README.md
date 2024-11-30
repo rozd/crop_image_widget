@@ -21,7 +21,7 @@ A Flutter widget for cropping sections of an image provided by an `ImageProvider
 
 ## Demo
 
-<img width="480" alt="Crop Image Widget Demo" src="doc/screenshots/demo.gif">
+<img width="480" alt="Crop Image Widget Demo" src="https://github.com/rozd/crop_image_widget/raw/main/doc/screenshots/demo.gif">
 
 [Try the web demo (CanvasKit)](https://rozd.github.io/crop_image_widget/)
 
@@ -42,7 +42,7 @@ CropImage(
   ),
 ),
 ```
-<img width="320" alt="Aspect Ratio Crop" src="doc/screenshots/example-aspect-ratio.png">
+<img width="320" alt="Aspect Ratio Crop" src="https://github.com/rozd/crop_image_widget/raw/main/doc/screenshots/example-aspect-ratio.png">
 
 #### Free-Form Crop Area
 ```dart
@@ -54,7 +54,7 @@ CropImage(
   ),
 ),
 ```
-<img width="320" alt="Aspect Ratio Crop" src="doc/screenshots/example-free-form.png">
+<img width="320" alt="Aspect Ratio Crop" src="https://github.com/rozd/crop_image_widget/raw/main/doc/screenshots/example-free-form.png">
 
 #### Circle Crop Area
 ```dart
@@ -66,7 +66,7 @@ CropImage(
   ),
 ),
 ```
-<img width="320" alt="Aspect Ratio Crop" src="doc/screenshots/example-circle.png">
+<img width="320" alt="Aspect Ratio Crop" src="https://github.com/rozd/crop_image_widget/raw/main/doc/screenshots/example-circle.png">
 
 ## Limitations
 The html web renderer is not supported.
