@@ -41,7 +41,7 @@ jobs:
         working-directory: example
         run: |
           flutter config --enable-web
-          flutter build web --release --web-renderer canvaskit --base-href /crop_image_widget/
+          flutter build web --release --web-renderer canvaskit --base-href /crop_image_widget/ --target lib/main_settings.dart
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
